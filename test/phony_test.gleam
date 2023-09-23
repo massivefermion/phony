@@ -41,3 +41,39 @@ pub fn fi_mobile_test() {
     phony.Mobile,
   ))
 }
+
+pub fn ir_mobile_test() {
+  phony.validate_by_country("09101752439", "IR")
+  |> should.be_ok
+  |> should.equal(phony.ValidationResult(
+    phony.Country("Iran (Islamic Republic of)", "IR", "98"),
+    phony.Mobile,
+  ))
+}
+
+pub fn ir_landline_test() {
+  phony.validate_by_country("02833772434", "IR")
+  |> should.be_ok
+  |> should.equal(phony.ValidationResult(
+    phony.Country("Iran (Islamic Republic of)", "IR", "98"),
+    phony.Landline,
+  ))
+}
+
+pub fn bd_mobile_test() {
+  phony.validate_by_code("1812345678", "880")
+  |> should.be_ok
+  |> should.equal(phony.ValidationResult(
+    phony.Country("Bangladesh", "BD", "880"),
+    phony.Mobile,
+  ))
+}
+
+pub fn bd_landline_test() {
+  phony.validate_by_code("27111234", "880")
+  |> should.be_ok
+  |> should.equal(phony.ValidationResult(
+    phony.Country("Bangladesh", "BD", "880"),
+    phony.Landline,
+  ))
+}

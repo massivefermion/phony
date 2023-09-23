@@ -2,6 +2,7 @@ import gleam/bool
 import gleam/list
 import gleam/regex
 import gleam/string
+import gleam/option
 import phony/metadata
 
 pub type ValidationResult {
@@ -21,7 +22,7 @@ pub fn get_countries() {
   metadata.by_alpha2
   |> list.map(fn(metadata) {
     let alpha2 = metadata.0
-    let #(name, code, _, _, _) = metadata.1
+    let #(name, code, _, _, _, _) = metadata.1
     Country(name, alpha2, code)
   })
 }
@@ -59,25 +60,45 @@ pub fn validate_by_country(
     |> list.key_find(alpha2)
   {
     Ok(metadata) -> {
-      let #(country, code, mobile_pattern, landline_pattern, possible_lengths) =
-        metadata
+      let #(
+        country,
+        code,
+        mobile_pattern,
+        landline_pattern,
+        possible_lengths,
+        leading,
+      ) = metadata
+
+      let phone_number = case string.starts_with(phone_number, "+") {
+        True -> string.drop_left(phone_number, string.length(code) + 1)
+        False -> phone_number
+      }
+
+      let phone_number =
+        case string.starts_with(phone_number, "0") {
+          True -> string.drop_left(phone_number, 1)
+          False -> phone_number
+        }
+        |> string.replace(" ", "")
 
       use <- bool.guard(
         !list.contains(possible_lengths, string.length(phone_number)),
         Error(Nil),
       )
 
+      use <- matches_leading(phone_number, leading)
+
       let assert Ok(pattern) = regex.from_string(mobile_pattern)
       case regex.check(pattern, phone_number) {
         True ->
-          ValidationResult(Country(country, metadata.0, code), Mobile)
+          ValidationResult(Country(country, alpha2, code), Mobile)
           |> Ok
 
         False -> {
           let assert Ok(pattern) = regex.from_string(landline_pattern)
           case regex.check(pattern, phone_number) {
             True ->
-              ValidationResult(Country(country, metadata.0, code), Landline)
+              ValidationResult(Country(country, alpha2, code), Landline)
               |> Ok
 
             False -> Error(Nil)
@@ -111,12 +132,27 @@ pub fn validate_by_code(
             mobile_pattern,
             landline_pattern,
             possible_lengths,
+            leading,
           ) = metadata.1
+
+          let phone_number = case string.starts_with(phone_number, "+") {
+            True -> string.drop_left(phone_number, string.length(code) + 1)
+            False -> phone_number
+          }
+
+          let phone_number =
+            case string.starts_with(phone_number, "0") {
+              True -> string.drop_left(phone_number, 1)
+              False -> phone_number
+            }
+            |> string.replace(" ", "")
 
           use <- bool.guard(
             !list.contains(possible_lengths, string.length(phone_number)),
             Error(Nil),
           )
+
+          use <- matches_leading(phone_number, leading)
 
           let assert Ok(pattern) = regex.from_string(mobile_pattern)
           case regex.check(pattern, phone_number) {
@@ -177,13 +213,33 @@ fn try_various_code_lengths(phone_number: String) {
 fn walk_metadata(phone_number: String) {
   metadata.by_alpha2
   |> list.find_map(fn(metadata) {
-    let #(country, code, mobile_pattern, landline_pattern, possible_lengths) =
-      metadata.1
+    let #(
+      country,
+      code,
+      mobile_pattern,
+      landline_pattern,
+      possible_lengths,
+      leading,
+    ) = metadata.1
+
+    let phone_number = case string.starts_with(phone_number, "+") {
+      True -> string.drop_left(phone_number, string.length(code) + 1)
+      False -> phone_number
+    }
+
+    let phone_number =
+      case string.starts_with(phone_number, "0") {
+        True -> string.drop_left(phone_number, 1)
+        False -> phone_number
+      }
+      |> string.replace(" ", "")
 
     use <- bool.guard(
       !list.contains(possible_lengths, string.length(phone_number)),
       Error(Nil),
     )
+
+    use <- matches_leading(phone_number, leading)
 
     let assert Ok(pattern) = regex.from_string(mobile_pattern)
     case regex.check(pattern, phone_number) {
@@ -208,4 +264,17 @@ fn walk_metadata(phone_number: String) {
 fn pre_validate(phone_number) -> Bool {
   let assert Ok(pattern) = regex.from_string("[A-Za-z]")
   regex.check(pattern, phone_number)
+}
+
+fn matches_leading(phone_number: String, leading: option.Option(String), rest) {
+  case leading {
+    option.Some(leading) -> {
+      let assert Ok(leading) = regex.from_string("^" <> leading)
+      case regex.check(leading, phone_number) {
+        True -> rest()
+        False -> Error(Nil)
+      }
+    }
+    option.None -> rest()
+  }
 }
