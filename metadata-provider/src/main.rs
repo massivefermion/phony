@@ -278,8 +278,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let raw_metadata = std::str::from_utf8(&raw_metadata)?;
     let cursor = Cursor::new(raw_metadata);
     let metadata = loader::load(BufReader::new(cursor))?;
-    // let json_matadata = serde_json::to_string(&metadata)?;
-    // std::fs::write("metadata.json", json_matadata)?;
 
     let mut country_descriptors = std::collections::BTreeMap::new();
     metadata.iter().for_each(|country_metadata| {
