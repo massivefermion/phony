@@ -77,3 +77,43 @@ pub fn bd_landline_test() {
     phony.Landline,
   ))
 }
+
+pub fn invalid_us_test() {
+  phony.validate("+127111234")
+  |> should.be_error
+}
+
+pub fn invalid_de_test() {
+  phony.validate("+49 321000")
+  |> should.be_error
+}
+
+pub fn invalid_fr_test() {
+  phony.validate("+33321000")
+  |> should.be_error
+}
+
+pub fn invalid_fi_test() {
+  phony.validate("+35 410 1234")
+  |> should.be_error
+}
+
+pub fn invalid_ir_test() {
+  phony.validate_by_country("4101234", "IR")
+  |> should.be_error
+}
+
+pub fn invalid_jp_test() {
+  phony.validate_by_country("32 10 00", "JP")
+  |> should.be_error
+}
+
+pub fn invalid_bd_test() {
+  phony.validate_by_code("410 12 34", "880")
+  |> should.be_error
+}
+
+pub fn invalid_gl_test() {
+  phony.validate_by_code("27111234", "299")
+  |> should.be_error
+}

@@ -37,7 +37,7 @@ pub fn validate(phone_number: String) -> Result(ValidationResult, Nil) {
       case string.split_once(phone_number, " ") {
         Ok(#(code, phone_number)) ->
           case string.length(code) <= 3 {
-            True -> validate_by_code(phone_number, code)
+            True -> internal_validate_by_code(phone_number, code)
             False -> try_various_code_lengths(code <> phone_number)
           }
 
@@ -116,7 +116,10 @@ pub fn validate_by_code(
   code: String,
 ) -> Result(ValidationResult, Nil) {
   use <- bool.guard(pre_validate(phone_number), Error(Nil))
+  internal_validate_by_code(phone_number, code)
+}
 
+fn internal_validate_by_code(phone_number: String, code: String) {
   case
     metadata.by_code
     |> list.filter(fn(metadata) { metadata.0 == code })
@@ -181,7 +184,7 @@ fn try_various_code_lengths(phone_number: String) {
   let code = string.slice(phone_number, 0, 1)
   let phone_number = string.drop_left(phone_number, 1)
 
-  case validate_by_code(phone_number, code) {
+  case internal_validate_by_code(phone_number, code) {
     Ok(result) -> Ok(result)
     Error(Nil) -> {
       let phone_number = code <> phone_number
@@ -189,7 +192,7 @@ fn try_various_code_lengths(phone_number: String) {
       let code = string.slice(phone_number, 0, 2)
       let phone_number = string.drop_left(phone_number, 2)
 
-      case validate_by_code(phone_number, code) {
+      case internal_validate_by_code(phone_number, code) {
         Ok(result) -> Ok(result)
         Error(Nil) -> {
           let phone_number = code <> phone_number
@@ -197,13 +200,7 @@ fn try_various_code_lengths(phone_number: String) {
           let code = string.slice(phone_number, 0, 3)
           let phone_number = string.drop_left(phone_number, 3)
 
-          case validate_by_code(phone_number, code) {
-            Ok(result) -> Ok(result)
-            Error(Nil) -> {
-              let phone_number = code <> phone_number
-              walk_metadata(phone_number)
-            }
-          }
+          internal_validate_by_code(phone_number, code)
         }
       }
     }
