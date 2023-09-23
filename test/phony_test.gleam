@@ -99,7 +99,12 @@ pub fn invalid_fi_test() {
 }
 
 pub fn invalid_ir_test() {
-  phony.validate_by_country("4101234", "IR")
+  phony.validate("+984101234")
+  |> should.be_error
+}
+
+pub fn invalid_zm_test() {
+  phony.validate("+260101234234")
   |> should.be_error
 }
 
@@ -110,10 +115,5 @@ pub fn invalid_jp_test() {
 
 pub fn invalid_bd_test() {
   phony.validate_by_code("410 12 34", "880")
-  |> should.be_error
-}
-
-pub fn invalid_gl_test() {
-  phony.validate_by_code("27111234", "299")
   |> should.be_error
 }
