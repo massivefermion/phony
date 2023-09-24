@@ -3,7 +3,7 @@
 [![Package Version](https://img.shields.io/hexpm/v/phony)](https://hex.pm/packages/phony)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/phony/)
 
-A Gleam project
+An international phone number validator
 
 ## Quick start
 
@@ -15,7 +15,7 @@ gleam shell # Run an Erlang shell
 
 ## Installation
 
-If available on Hex this package can be added to your Gleam project:
+This package can be added to your Gleam project:
 
 ```sh
 gleam add phony
