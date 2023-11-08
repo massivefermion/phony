@@ -10,7 +10,6 @@ An international phone number validator
 ## <img width=32 src="https://raw.githubusercontent.com/massivefermion/phony/main/icon.png"> Quick start
 
 ```sh
-gleam run   # Run the project
 gleam test  # Run the tests
 gleam shell # Run an Erlang shell
 ```
