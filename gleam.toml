@@ -1,12 +1,12 @@
 name = "phony"
-version = "0.6.0"
+version = "1.0.0"
 
 description = "An international phone number validator"
+gleam = ">= 0.32.0"
 licences = ["Apache-2.0"]
-links = [{title = "gleam", href = "https://gleam.run"}]
+links = [{title = "Gleam", href = "https://gleam.run"}]
 repository = {type = "github", user = "massivefermion", repo = "phony"}
 
-gleam = ">= 0.32.0"
 internal_modules = [
   "phony/metadata",
 ]
