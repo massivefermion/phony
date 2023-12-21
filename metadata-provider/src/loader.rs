@@ -18,19 +18,19 @@ use std::str;
 use quick_xml::events::attributes::Attribute;
 use quick_xml::events::{self, Event};
 use quick_xml::Reader;
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::Deserialize;
 
 use crate::error;
 
 /// Temporary defaults for `Format` and `Descriptor`.
-#[derive(Clone, Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Deserialize)]
 pub struct Defaults {
     format: Format,
     descriptor: Descriptor,
 }
 
 /// Parsed version of `metadata::Metadata`.
-#[derive(Clone, Default, Serialize, Deserialize, Debug)]
+#[derive(Default, Deserialize)]
 pub struct Metadata {
     pub general: Option<Descriptor>,
     pub fixed_line: Option<Descriptor>,
@@ -71,7 +71,7 @@ pub struct Metadata {
 }
 
 /// Parsed version of `metadata::Format`.
-#[derive(Clone, Default, Serialize, Deserialize, Debug)]
+#[derive(Clone, Default, Deserialize)]
 pub struct Format {
     pub pattern: Option<String>,
     pub format: Option<String>,
@@ -82,7 +82,7 @@ pub struct Format {
 }
 
 /// Parsed version of `metadata::Descriptor`.
-#[derive(Clone, Default, Serialize, Deserialize, Debug)]
+#[derive(Clone, Default, Deserialize)]
 pub struct Descriptor {
     pub national_number: Option<String>,
     pub possible_length: Vec<u16>,

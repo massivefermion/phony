@@ -10,7 +10,7 @@ pub type ValidationResult {
 }
 
 pub type Country {
-  Country(name: String, alpha2: String, code: String)
+  Country(name: String, alpha2: String, flag: String, code: String)
 }
 
 pub type PhoneNumberKind {
@@ -22,8 +22,8 @@ pub fn get_countries() {
   metadata.by_alpha2
   |> list.map(fn(metadata) {
     let alpha2 = metadata.0
-    let #(name, code, _, _, _, _) = metadata.1
-    Country(name, alpha2, code)
+    let #(name, flag, code, _, _, _, _) = metadata.1
+    Country(name, alpha2, flag, code)
   })
 }
 
@@ -62,6 +62,7 @@ pub fn validate_by_country(
     Ok(metadata) -> {
       let #(
         country,
+        flag,
         code,
         mobile_pattern,
         landline_pattern,
@@ -91,14 +92,14 @@ pub fn validate_by_country(
       let assert Ok(pattern) = regex.from_string(mobile_pattern)
       case regex.check(pattern, phone_number) {
         True ->
-          ValidationResult(Country(country, alpha2, code), Mobile)
+          ValidationResult(Country(country, alpha2, flag, code), Mobile)
           |> Ok
 
         False -> {
           let assert Ok(pattern) = regex.from_string(landline_pattern)
           case regex.check(pattern, phone_number) {
             True ->
-              ValidationResult(Country(country, alpha2, code), Landline)
+              ValidationResult(Country(country, alpha2, flag, code), Landline)
               |> Ok
 
             False -> Error(Nil)
@@ -126,56 +127,54 @@ fn internal_validate_by_code(phone_number: String, code: String) {
   {
     [] -> Error(Nil)
     filtered -> {
-      list.find_map(
-        filtered,
-        fn(metadata) {
-          let #(
-            country,
-            alpha2,
-            mobile_pattern,
-            landline_pattern,
-            possible_lengths,
-            leading,
-          ) = metadata.1
+      list.find_map(filtered, fn(metadata) {
+        let #(
+          country,
+          alpha2,
+          flag,
+          mobile_pattern,
+          landline_pattern,
+          possible_lengths,
+          leading,
+        ) = metadata.1
 
-          let phone_number = case string.starts_with(phone_number, "+") {
-            True -> string.drop_left(phone_number, string.length(code) + 1)
+        let phone_number = case string.starts_with(phone_number, "+") {
+          True -> string.drop_left(phone_number, string.length(code) + 1)
+          False -> phone_number
+        }
+
+        let phone_number =
+          case string.starts_with(phone_number, "0") {
+            True -> string.drop_left(phone_number, 1)
             False -> phone_number
           }
+          |> string.replace(" ", "")
 
-          let phone_number =
-            case string.starts_with(phone_number, "0") {
-              True -> string.drop_left(phone_number, 1)
-              False -> phone_number
-            }
-            |> string.replace(" ", "")
+        use <- bool.guard(
+          !list.contains(possible_lengths, string.length(phone_number)),
+          Error(Nil),
+        )
 
-          use <- bool.guard(
-            !list.contains(possible_lengths, string.length(phone_number)),
-            Error(Nil),
-          )
+        use <- matches_leading(phone_number, leading)
 
-          use <- matches_leading(phone_number, leading)
+        let assert Ok(pattern) = regex.from_string(mobile_pattern)
+        case regex.check(pattern, phone_number) {
+          True ->
+            ValidationResult(Country(country, alpha2, flag, code), Mobile)
+            |> Ok
 
-          let assert Ok(pattern) = regex.from_string(mobile_pattern)
-          case regex.check(pattern, phone_number) {
-            True ->
-              ValidationResult(Country(country, alpha2, code), Mobile)
-              |> Ok
+          False -> {
+            let assert Ok(pattern) = regex.from_string(landline_pattern)
+            case regex.check(pattern, phone_number) {
+              True ->
+                ValidationResult(Country(country, alpha2, flag, code), Landline)
+                |> Ok
 
-            False -> {
-              let assert Ok(pattern) = regex.from_string(landline_pattern)
-              case regex.check(pattern, phone_number) {
-                True ->
-                  ValidationResult(Country(country, alpha2, code), Landline)
-                  |> Ok
-
-                False -> Error(Nil)
-              }
+              False -> Error(Nil)
             }
           }
-        },
-      )
+        }
+      })
     }
   }
 }
@@ -212,6 +211,7 @@ fn walk_metadata(phone_number: String) {
   |> list.find_map(fn(metadata) {
     let #(
       country,
+      flag,
       code,
       mobile_pattern,
       landline_pattern,
@@ -241,14 +241,14 @@ fn walk_metadata(phone_number: String) {
     let assert Ok(pattern) = regex.from_string(mobile_pattern)
     case regex.check(pattern, phone_number) {
       True ->
-        ValidationResult(Country(country, metadata.0, code), Mobile)
+        ValidationResult(Country(country, metadata.0, flag, code), Mobile)
         |> Ok
 
       False -> {
         let assert Ok(pattern) = regex.from_string(landline_pattern)
         case regex.check(pattern, phone_number) {
           True ->
-            ValidationResult(Country(country, metadata.0, code), Landline)
+            ValidationResult(Country(country, metadata.0, flag, code), Landline)
             |> Ok
 
           False -> Error(Nil)

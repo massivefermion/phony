@@ -1,14 +1,12 @@
 [package]
 edition = "2021"
 name = "metadata-provider"
-version = "0.1.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+version = "1.0.0"
 
 [dependencies]
-quick-xml = "0.30"
+serde = "1.0"
 reqwest = "0.11"
-serde = "1.0.188"
-serde_derive = "1.0.188"
+quick-xml = "0.31"
+serde_derive = "1.0"
 thiserror = "1.0"
-tokio = {version = "1", features = ["full"]}
+tokio = { version = "1.35", features = ["macros", "rt-multi-thread"] }
