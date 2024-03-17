@@ -10,11 +10,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '26.1'
-          gleam-version: '0.34.0'
+          otp-version: '26'
+          gleam-version: '1.0'
 
       - run: |
           version="v$(cat gleam.toml | grep -m 1 "version" | sed -r "s/version *= *\"([[:digit:].]+)\"/\1/")"
