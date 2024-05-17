@@ -1,8 +1,9 @@
 import gleam/bool
 import gleam/list
+import gleam/option
 import gleam/regex
 import gleam/string
-import gleam/option
+
 import phony/metadata
 
 pub type ValidationResult {
