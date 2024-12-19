@@ -1,5 +1,5 @@
 name = "phony"
-version = "1.1.11"
+version = "1.2.0"
 
 links = [{ title = "Gleam", href = "https://gleam.run" }]
 description = "An international phone number validator"
@@ -10,8 +10,8 @@ internal_modules = ["phony/metadata"]
 
 
 [dependencies]
-gleam_stdlib = "~> 0.40 or ~> 1.0"
-
+gleam_stdlib = ">= 0.49.0 and < 2.0.0"
+gleam_regexp = ">= 1.0.0 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = "~> 1.2"

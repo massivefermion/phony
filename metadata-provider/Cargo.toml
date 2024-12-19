@@ -6,7 +6,7 @@ version = "1.0.0"
 [dependencies]
 serde = "1.0"
 reqwest = "0.12"
-quick-xml = "0.36"
+quick-xml = "0.37"
 serde_derive = "1.0"
-thiserror = "1.0"
-tokio = { version = "1.36", features = ["macros", "rt-multi-thread"] }
+thiserror = "2.0"
+tokio = { version = "1.42", features = ["macros", "rt-multi-thread"] }

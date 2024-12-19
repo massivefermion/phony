@@ -44,9 +44,9 @@ pub struct Metadata {
     pub uan: Option<Descriptor>,
     pub emergency: Option<Descriptor>,
     pub voicemail: Option<Descriptor>,
-    pub short_code: Option<Descriptor>,
-    pub standard_rate: Option<Descriptor>,
-    pub carrier: Option<Descriptor>,
+    // pub short_code: Option<Descriptor>,
+    // pub standard_rate: Option<Descriptor>,
+    // pub carrier: Option<Descriptor>,
     pub no_international: Option<Descriptor>,
 
     pub id: Option<String>,
