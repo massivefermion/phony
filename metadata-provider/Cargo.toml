@@ -5,8 +5,8 @@ version = "1.0.0"
 
 [dependencies]
 serde = "1.0"
-reqwest = "0.12"
-quick-xml = "0.37"
+reqwest = "0.13"
+quick-xml = "0.39"
 serde_derive = "1.0"
 thiserror = "2.0"
-tokio = { version = "1.45", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.49", features = ["macros", "rt-multi-thread"] }
